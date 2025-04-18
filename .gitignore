@@ -1,0 +1,48 @@
+bin/**
+obj/**
+
+# Build results
+**/bin/
+**/obj/
+**/out/
+**/dist/
+**/build/
+**/Release/
+**/Debug/
+**/artifacts/
+
+# Dependencies
+**/node_modules/
+**/bower_components/
+**/jspm_packages/
+**/packages/
+**/vendor/
+**/typings/
+
+# IDE and editor files
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.suo
+**/*.user
+**/*.userosscache
+**/*.sln.docstates
+**/*.sln.ide-shelf
+
+# Temporary files and logs
+**/logs/
+**/temp/
+**/tmp/
+**/.DS_Store
+**/Thumbs.db
+
+# F# / FAKE specific
+**/.paket/
+**/.fake/
+**/.fable/
+**/.fableconfig.json
+
+# User-specific files
+**/*.userprefs
+**/*.dbmdl
+**/*.jfm
