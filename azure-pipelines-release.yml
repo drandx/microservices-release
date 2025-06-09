@@ -23,15 +23,20 @@ steps:
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Console App Artifact'
   inputs:
-    buildType: 'current'
+    buildType: 'specific'
     artifactName: 'console-app'
+    pipeline: '$(resources.pipeline.buildPipeline.pipelineID)'
+    runVersion: 'specific'
+    runId: '$(resources.pipeline.buildPipeline.runID)'
+    patterns: '**/*.zip'
     targetPath: '$(Pipeline.Workspace)/console-app'
     
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Web API Artifact'
   inputs:
-    buildType: 'current'
+    buildType: 'specific'
     artifactName: 'web-api'
+    patterns: '**/*.zip'
     targetPath: '$(Pipeline.Workspace)/web-api'
 
 # Example step to do something with the artifacts
