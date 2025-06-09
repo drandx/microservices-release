@@ -70,7 +70,7 @@ steps:
     publishWebProjects: false
     projects: '$(consoleAppProjectPath)'
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/console-app'
-    zipAfterPublish: false
+    zipAfterPublish: true
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish Web API'
@@ -79,7 +79,7 @@ steps:
     publishWebProjects: false
     projects: '$(webApiProjectPath)'
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web-api'
-    zipAfterPublish: false
+    zipAfterPublish: true
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Console App Artifact'
