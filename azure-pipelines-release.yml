@@ -9,9 +9,8 @@ trigger: none
 resources:
   pipelines:
     - pipeline: buildPipeline
-      source: azure-pipelines-build
+      source: Microservices-Build
       trigger: none
-      version: ${{ parameters.buildVersion }}
 
 pool:
   name: Azure Pipelines
@@ -25,29 +24,27 @@ steps:
     echo "Using build version: ${{ parameters.buildVersion }}"
   displayName: 'Print Selected Build Version'
 
-- task: DownloadBuildArtifacts@1
+- task: DownloadPipelineArtifact@2
   displayName: 'Download Console App Artifact'
   inputs:
-    buildType: 'specific'
+    source: 'specific'
     project: '$(System.TeamProject)'
-    pipeline: $(resources.pipeline.buildPipeline.pipelineName)
-    buildVersionToDownload: 'specific'
-    downloadType: 'single'
-    artifactName: 'console-app'
-    downloadPath: '$(Pipeline.Workspace)'
-    buildId: '${{ parameters.buildVersion }}'
+    pipeline: $(resources.pipelines.buildPipeline.pipelineId)
+    runVersion: 'specific'
+    runId: '${{ parameters.buildVersion }}'
+    artifact: 'console-app'
+    path: '$(Pipeline.Workspace)/console-app'
     
-- task: DownloadBuildArtifacts@1
+- task: DownloadPipelineArtifact@2
   displayName: 'Download Web API Artifact'
   inputs:
-    buildType: 'specific'
+    source: 'specific'
     project: '$(System.TeamProject)'
-    pipeline: $(resources.pipeline.buildPipeline.pipelineName)
-    buildVersionToDownload: 'specific'
-    downloadType: 'single'
-    artifactName: 'web-api'
-    downloadPath: '$(Pipeline.Workspace)'
-    buildId: '${{ parameters.buildVersion }}'
+    pipeline: $(resources.pipelines.buildPipeline.pipelineId)
+    runVersion: 'specific'
+    runId: '${{ parameters.buildVersion }}'
+    artifact: 'web-api'
+    path: '$(Pipeline.Workspace)/web-api'
 
 # Example step to do something with the artifacts
 - script: |
