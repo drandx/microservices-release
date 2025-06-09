@@ -1,4 +1,3 @@
-# Move parameters before resources to ensure they're properly recognized
 parameters:
   - name: buildVersion
     displayName: 'Build Version to Download'
