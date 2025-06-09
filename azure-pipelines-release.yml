@@ -1,9 +1,3 @@
-parameters:
-  - name: buildVersion
-    displayName: 'Build Version to Download'
-    type: string
-    default: ''
-    
 trigger: none
 
 resources:
@@ -21,30 +15,24 @@ variables:
 
 steps:
 - script: |
-    echo "Using build version: ${{ parameters.buildVersion }}"
+    echo "Using source branch: $(resources.pipeline.buildPipeline.sourceBranch)"
+    echo "Using source commit: $(resources.pipeline.buildPipeline.sourceCommit)"
+    echo "Using build number: $(resources.pipeline.buildPipeline.runName)"
   displayName: 'Print Selected Build Version'
 
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Console App Artifact'
   inputs:
-    source: 'specific'
-    project: '$(System.TeamProject)'
-    pipeline: $(resources.pipelines.buildPipeline.pipelineId)
-    runVersion: 'specific'
-    runId: '${{ parameters.buildVersion }}'
-    artifact: 'console-app'
-    path: '$(Pipeline.Workspace)/console-app'
+    buildType: 'current'
+    artifactName: 'console-app'
+    targetPath: '$(Pipeline.Workspace)/console-app'
     
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Web API Artifact'
   inputs:
-    source: 'specific'
-    project: '$(System.TeamProject)'
-    pipeline: $(resources.pipelines.buildPipeline.pipelineId)
-    runVersion: 'specific'
-    runId: '${{ parameters.buildVersion }}'
-    artifact: 'web-api'
-    path: '$(Pipeline.Workspace)/web-api'
+    buildType: 'current'
+    artifactName: 'web-api'
+    targetPath: '$(Pipeline.Workspace)/web-api'
 
 # Example step to do something with the artifacts
 - script: |
