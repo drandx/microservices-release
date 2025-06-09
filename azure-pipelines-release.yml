@@ -3,9 +3,7 @@ parameters:
     displayName: 'Build Version to Download'
     type: string
     default: ''
-    required: true
     
-# Set trigger to none to ensure this pipeline is only run manually
 trigger: none
 
 resources:
