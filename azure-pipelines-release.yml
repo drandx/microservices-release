@@ -1,3 +1,19 @@
+# Move parameters before resources to ensure they're properly recognized
+parameters:
+  - name: buildVersion
+    displayName: 'Build Version to Download'
+    type: string
+    default: ''
+    required: true
+
+resources:
+  pipelines:
+    - pipeline: buildPipeline
+      source: azure-pipelines-build
+      trigger: false
+      # The version will be supplied by the parameter
+      version: ${{ parameters.buildVersion }}
+
 trigger:
   branches:
     include:
@@ -13,22 +29,6 @@ pool:
 variables:
   buildConfiguration: 'Release'
   projectPath: 'BuildProjectConsoleApp.csproj'
-
-resources:
-  pipelines:
-    - pipeline: buildPipeline
-      source: azure-pipelines-build
-      trigger: false
-      # Set the version/tag to download artifacts from
-      # Replace the value below with the desired build number or set it as a parameter
-      run: $(buildVersion)
-
-parameters:
-  - name: buildVersion
-    displayName: 'Build Version to Download'
-    type: string
-    default: ''
-    required: true
 
 steps:
 - task: DownloadPipelineArtifact@2
