@@ -25,6 +25,7 @@ steps:
   inputs:
     buildType: 'specific'
     artifactName: 'console-app'
+    project: '$(System.TeamProject)'
     pipeline: '$(resources.pipeline.buildPipeline.pipelineID)'
     runVersion: 'specific'
     runId: '$(resources.pipeline.buildPipeline.runID)'
