@@ -15,26 +15,6 @@ variables:
   projectPath: 'BuildProjectConsoleApp.csproj'
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET SDK 8.0'
-  inputs:
-    packageType: 'sdk'
-    version: '8.0.x'
-    installationPath: $(Agent.ToolsDirectory)/dotnet
-
-- task: DotNetCoreCLI@2
-  displayName: 'Restore NuGet packages'
-  inputs:
-    command: 'restore'
-    projects: '$(projectPath)'
-
-- task: DotNetCoreCLI@2
-  displayName: 'Build project'
-  inputs:
-    command: 'build'
-    projects: '$(projectPath)'
-    arguments: '--configuration $(buildConfiguration) --no-restore'
-
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Console App Artifact'
   inputs:
