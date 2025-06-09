@@ -31,19 +31,30 @@ steps:
     runId: '$(resources.pipeline.buildPipeline.runID)'
     patterns: '**/*.zip'
     targetPath: '$(Pipeline.Workspace)/console-app'
-    
-# - task: DownloadPipelineArtifact@2
-#   displayName: 'Download Web API Artifact'
-#   inputs:
-#     buildType: 'specific'
-#     artifactName: 'web-api'
-#     patterns: '**/*.zip'
-#     targetPath: '$(Pipeline.Workspace)/web-api'
 
-# Example step to do something with the artifacts
-# - script: |
-#     echo "Console App files:"
-#     ls $(Pipeline.Workspace)/console-app
-#     echo "Web API files:"
-#     ls $(Pipeline.Workspace)/web-api
-#   displayName: 'List downloaded artifact contents'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Console App Artifact'
+  inputs:
+    PathtoPublish: '$(Pipeline.Workspace)/console-app'
+    ArtifactName: 'console-app'
+    publishLocation: 'Container'
+    # Optionally, you can set TargetPath if you want to specify a subfolder in the artifact container
+
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download Web API Artifact'
+  inputs:
+    buildType: 'specific'
+    artifactName: 'web-api'
+    project: 'AzureSamples'
+    pipeline: '$(resources.pipeline.buildPipeline.pipelineID)'
+    runVersion: 'specific'
+    runId: '$(resources.pipeline.buildPipeline.runID)'
+    patterns: '**/*.zip'
+    targetPath: '$(Pipeline.Workspace)/web-api'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Web API Artifact'
+  inputs:
+    PathtoPublish: '$(Pipeline.Workspace)/web-api'
+    ArtifactName: 'web-api'
+    publishLocation: 'Container'
