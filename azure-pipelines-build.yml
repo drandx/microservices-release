@@ -12,7 +12,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  projectPath: 'BuildProjectConsoleApp.csproj'
+  projectPath: 'console-apps/BuildProjectConsoleApp/BuildProjectConsoleApp.csproj'
 
 steps:
 - task: UseDotNet@2
