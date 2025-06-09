@@ -1,0 +1,6 @@
+@BuildProjectWebApi_HostAddress = http://localhost:5237
+
+GET {{BuildProjectWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
