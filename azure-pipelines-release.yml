@@ -13,6 +13,8 @@ pool:
 variables:
   buildConfiguration: 'Release'
   projectPath: 'BuildProjectConsoleApp.csproj'
+  # Set the build number to include a version tag (should match build pipeline)
+  name: '$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)'
 
 steps:
 - task: DownloadPipelineArtifact@2
@@ -20,13 +22,22 @@ steps:
   inputs:
     artifact: 'console-app'
     path: '$(Pipeline.Workspace)/console-app'
+    # Download the artifact from a specific build version if needed
+    # Use the buildVersionToDownload input if you want to select a specific version
+    # buildVersionToDownload: 'specific'
+    # buildId: $(resources.pipeline.build.runId)
 
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Web API Artifact'
   inputs:
     artifact: 'web-api'
     path: '$(Pipeline.Workspace)/web-api'
+    # Download the artifact from a specific build version if needed
+    # Use the buildVersionToDownload input if you want to select a specific version
+    # buildVersionToDownload: 'specific'
+    # buildId: $(resources.pipeline.build.runId)
 
+# Example step to do something with the artifacts
 - script: |
     echo "Console App files:"
     ls $(Pipeline.Workspace)/console-app

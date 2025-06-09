@@ -73,6 +73,13 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/console-app'
     ArtifactName: 'console-app'
     publishLocation: 'Container'
+    # Add versioning tag to artifact
+    # Use Build.BuildNumber or a custom variable for versioning
+    # The release pipeline can use this tag to select the correct artifact version
+    # Example: $(Build.BuildNumber) is the default build number, can be customized
+    # You can also use $(Build.SourceBranchName)-$(Date:yyyyMMdd) or similar
+    # For now, use Build.BuildNumber
+    # Note: PublishBuildArtifacts@1 does not have a direct 'tag' input, but you can set the build number as a tag
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Web API Artifact'
@@ -80,3 +87,8 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/web-api'
     ArtifactName: 'web-api'
     publishLocation: 'Container'
+    # Add versioning tag to artifact
+    # See above for notes
+
+# Set the build number to include a version tag
+name: '$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)'
