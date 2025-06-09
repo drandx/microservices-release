@@ -41,9 +41,9 @@ steps:
 #     targetPath: '$(Pipeline.Workspace)/web-api'
 
 # Example step to do something with the artifacts
-- script: |
-    echo "Console App files:"
-    ls $(Pipeline.Workspace)/console-app
-    echo "Web API files:"
-    ls $(Pipeline.Workspace)/web-api
-  displayName: 'List downloaded artifact contents'
+# - script: |
+#     echo "Console App files:"
+#     ls $(Pipeline.Workspace)/console-app
+#     echo "Web API files:"
+#     ls $(Pipeline.Workspace)/web-api
+#   displayName: 'List downloaded artifact contents'
