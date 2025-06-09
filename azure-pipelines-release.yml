@@ -4,23 +4,16 @@ parameters:
     type: string
     default: ''
     required: true
+    
+# Set trigger to none to ensure this pipeline is only run manually
+trigger: none
 
 resources:
   pipelines:
     - pipeline: buildPipeline
       source: azure-pipelines-build
-      trigger: false
-      # The version will be supplied by the parameter
+      trigger: none
       version: ${{ parameters.buildVersion }}
-
-trigger:
-  branches:
-    include:
-    - main
-    - master
-  paths:
-    include:
-    - '**'
 
 pool:
   name: Azure Pipelines
@@ -30,27 +23,33 @@ variables:
   projectPath: 'BuildProjectConsoleApp.csproj'
 
 steps:
-- task: DownloadPipelineArtifact@2
+- script: |
+    echo "Using build version: ${{ parameters.buildVersion }}"
+  displayName: 'Print Selected Build Version'
+
+- task: DownloadBuildArtifacts@1
   displayName: 'Download Console App Artifact'
   inputs:
     buildType: 'specific'
     project: '$(System.TeamProject)'
-    pipeline: $(resources.pipeline.buildPipeline.pipelineId)
-    runVersion: 'specific'
-    runId: $(resources.pipeline.buildPipeline.runId)
-    artifact: 'console-app'
-    path: '$(Pipeline.Workspace)/console-app'
-
-- task: DownloadPipelineArtifact@2
+    pipeline: $(resources.pipeline.buildPipeline.pipelineName)
+    buildVersionToDownload: 'specific'
+    downloadType: 'single'
+    artifactName: 'console-app'
+    downloadPath: '$(Pipeline.Workspace)'
+    buildId: '${{ parameters.buildVersion }}'
+    
+- task: DownloadBuildArtifacts@1
   displayName: 'Download Web API Artifact'
   inputs:
     buildType: 'specific'
     project: '$(System.TeamProject)'
-    pipeline: $(resources.pipeline.buildPipeline.pipelineId)
-    runVersion: 'specific'
-    runId: $(resources.pipeline.buildPipeline.runId)
-    artifact: 'web-api'
-    path: '$(Pipeline.Workspace)/web-api'
+    pipeline: $(resources.pipeline.buildPipeline.pipelineName)
+    buildVersionToDownload: 'specific'
+    downloadType: 'single'
+    artifactName: 'web-api'
+    downloadPath: '$(Pipeline.Workspace)'
+    buildId: '${{ parameters.buildVersion }}'
 
 # Example step to do something with the artifacts
 - script: |
