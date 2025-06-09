@@ -7,6 +7,10 @@ trigger:
     include:
     - '**'
 
+# Custom build number format: branch-date-revision 
+# This will be displayed in the Azure DevOps UI and can be used for artifact versioning
+name: '$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)'
+
 pool:
   name: Azure Pipelines
 
@@ -99,6 +103,3 @@ steps:
     publishLocation: 'Container'
     # Add versioning tag to artifact
     # See above for notes
-
-# Set the build number to include a version tag
-name: '$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)'
