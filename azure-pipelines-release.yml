@@ -13,8 +13,6 @@ pool:
 variables:
   buildConfiguration: 'Release'
   projectPath: 'BuildProjectConsoleApp.csproj'
-  # Set the build number to include a version tag (should match build pipeline)
-  name: '$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)'
 
 resources:
   pipelines:
@@ -30,6 +28,7 @@ parameters:
     displayName: 'Build Version to Download'
     type: string
     default: ''
+    required: true
 
 steps:
 - task: DownloadPipelineArtifact@2
