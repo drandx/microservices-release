@@ -16,26 +16,43 @@ variables:
   # Set the build number to include a version tag (should match build pipeline)
   name: '$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)'
 
+resources:
+  pipelines:
+    - pipeline: buildPipeline
+      source: azure-pipelines-build
+      trigger: false
+      # Set the version/tag to download artifacts from
+      # Replace the value below with the desired build number or set it as a parameter
+      run: $(buildVersion)
+
+parameters:
+  - name: buildVersion
+    displayName: 'Build Version to Download'
+    type: string
+    default: ''
+
 steps:
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Console App Artifact'
   inputs:
+    buildType: 'specific'
+    project: '$(System.TeamProject)'
+    pipeline: $(resources.pipeline.buildPipeline.pipelineId)
+    runVersion: 'specific'
+    runId: $(resources.pipeline.buildPipeline.runId)
     artifact: 'console-app'
     path: '$(Pipeline.Workspace)/console-app'
-    # Download the artifact from a specific build version if needed
-    # Use the buildVersionToDownload input if you want to select a specific version
-    # buildVersionToDownload: 'specific'
-    # buildId: $(resources.pipeline.build.runId)
 
 - task: DownloadPipelineArtifact@2
   displayName: 'Download Web API Artifact'
   inputs:
+    buildType: 'specific'
+    project: '$(System.TeamProject)'
+    pipeline: $(resources.pipeline.buildPipeline.pipelineId)
+    runVersion: 'specific'
+    runId: $(resources.pipeline.buildPipeline.runId)
     artifact: 'web-api'
     path: '$(Pipeline.Workspace)/web-api'
-    # Download the artifact from a specific build version if needed
-    # Use the buildVersionToDownload input if you want to select a specific version
-    # buildVersionToDownload: 'specific'
-    # buildId: $(resources.pipeline.build.runId)
 
 # Example step to do something with the artifacts
 - script: |

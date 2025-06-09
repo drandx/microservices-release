@@ -16,6 +16,16 @@ variables:
   webApiProjectPath: 'apis/BuildProjectWebApi/BuildProjectWebApi.csproj'
 
 steps:
+- script: |
+    echo "##[section]Build Version Information"
+    echo "Build Name/Version: $(Build.BuildNumber)"
+    echo "Components used in version:"
+    echo "  Branch: $(Build.SourceBranchName)"
+    echo "  Date: $(Date:yyyyMMdd)"
+    echo "  Revision: $(Rev:.r)"
+    echo "This version can be used in the release pipeline"
+  displayName: 'Print Build Version'
+
 - task: UseDotNet@2
   displayName: 'Use .NET SDK 8.0'
   inputs:
