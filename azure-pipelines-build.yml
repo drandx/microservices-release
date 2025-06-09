@@ -12,7 +12,8 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  projectPath: 'console-apps/BuildProjectConsoleApp/BuildProjectConsoleApp.csproj'
+  consoleAppProjectPath: 'console-apps/BuildProjectConsoleApp/BuildProjectConsoleApp.csproj'
+  webApiProjectPath: 'apis/BuildProjectWebApi/BuildProjectWebApi.csproj'
 
 steps:
 - task: UseDotNet@2
@@ -23,14 +24,59 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: DotNetCoreCLI@2
-  displayName: 'Restore NuGet packages'
+  displayName: 'Restore NuGet packages (Console App)'
   inputs:
     command: 'restore'
-    projects: '$(projectPath)'
+    projects: '$(consoleAppProjectPath)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build project'
+  displayName: 'Restore NuGet packages (Web API)'
+  inputs:
+    command: 'restore'
+    projects: '$(webApiProjectPath)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Console App'
   inputs:
     command: 'build'
-    projects: '$(projectPath)'
+    projects: '$(consoleAppProjectPath)'
     arguments: '--configuration $(buildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Web API'
+  inputs:
+    command: 'build'
+    projects: '$(webApiProjectPath)'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Console App'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(consoleAppProjectPath)'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/console-app'
+    zipAfterPublish: false
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Web API'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(webApiProjectPath)'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web-api'
+    zipAfterPublish: false
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Console App Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/console-app'
+    ArtifactName: 'console-app'
+    publishLocation: 'Container'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Web API Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/web-api'
+    ArtifactName: 'web-api'
+    publishLocation: 'Container'

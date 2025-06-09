@@ -34,3 +34,22 @@ steps:
     command: 'build'
     projects: '$(projectPath)'
     arguments: '--configuration $(buildConfiguration) --no-restore'
+
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download Console App Artifact'
+  inputs:
+    artifact: 'console-app'
+    path: '$(Pipeline.Workspace)/console-app'
+
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download Web API Artifact'
+  inputs:
+    artifact: 'web-api'
+    path: '$(Pipeline.Workspace)/web-api'
+
+- script: |
+    echo "Console App files:"
+    ls $(Pipeline.Workspace)/console-app
+    echo "Web API files:"
+    ls $(Pipeline.Workspace)/web-api
+  displayName: 'List downloaded artifact contents'
