@@ -7,14 +7,29 @@ trigger:
     include:
     - '**'
 
+# Custom build number format: branch-date-revision 
+# This will be displayed in the Azure DevOps UI and can be used for artifact versioning
+name: '$(Build.SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)'
+
 pool:
   name: Azure Pipelines
 
 variables:
   buildConfiguration: 'Release'
-  projectPath: 'BuildProjectConsoleApp.csproj'
+  consoleAppProjectPath: 'console-apps/BuildProjectConsoleApp/BuildProjectConsoleApp.csproj'
+  webApiProjectPath: 'apis/BuildProjectWebApi/BuildProjectWebApi.csproj'
 
 steps:
+- script: |
+    echo "##[section]Build Version Information"
+    echo "Build Name/Version: $(Build.BuildNumber)"
+    echo "Components used in version:"
+    echo "  Branch: $(Build.SourceBranchName)"
+    echo "  Date: $(Date:yyyyMMdd)"
+    echo "  Revision: $(Rev:.r)"
+    echo "This version can be used in the release pipeline"
+  displayName: 'Print Build Version'
+
 - task: UseDotNet@2
   displayName: 'Use .NET SDK 8.0'
   inputs:
@@ -23,14 +38,68 @@ steps:
     installationPath: $(Agent.ToolsDirectory)/dotnet
 
 - task: DotNetCoreCLI@2
-  displayName: 'Restore NuGet packages'
+  displayName: 'Restore NuGet packages (Console App)'
   inputs:
     command: 'restore'
-    projects: '$(projectPath)'
+    projects: '$(consoleAppProjectPath)'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build project'
+  displayName: 'Restore NuGet packages (Web API)'
+  inputs:
+    command: 'restore'
+    projects: '$(webApiProjectPath)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Console App'
   inputs:
     command: 'build'
-    projects: '$(projectPath)'
+    projects: '$(consoleAppProjectPath)'
     arguments: '--configuration $(buildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Build Web API'
+  inputs:
+    command: 'build'
+    projects: '$(webApiProjectPath)'
+    arguments: '--configuration $(buildConfiguration) --no-restore'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Console App'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(consoleAppProjectPath)'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/console-app'
+    zipAfterPublish: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Web API'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(webApiProjectPath)'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/web-api'
+    zipAfterPublish: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Console App Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/console-app'
+    ArtifactName: 'console-app'
+    publishLocation: 'Container'
+    # Add versioning tag to artifact
+    # Use Build.BuildNumber or a custom variable for versioning
+    # The release pipeline can use this tag to select the correct artifact version
+    # Example: $(Build.BuildNumber) is the default build number, can be customized
+    # You can also use $(Build.SourceBranchName)-$(Date:yyyyMMdd) or similar
+    # For now, use Build.BuildNumber
+    # Note: PublishBuildArtifacts@1 does not have a direct 'tag' input, but you can set the build number as a tag
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Web API Artifact'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/web-api'
+    ArtifactName: 'web-api'
+    publishLocation: 'Container'
+    # Add versioning tag to artifact
+    # See above for notes

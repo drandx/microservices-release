@@ -1,11 +1,10 @@
-trigger:
-  branches:
-    include:
-    - main
-    - master
-  paths:
-    include:
-    - '**'
+trigger: none
+
+resources:
+  pipelines:
+    - pipeline: buildPipeline
+      source: Microservices-Build
+      trigger: none
 
 pool:
   name: Azure Pipelines
@@ -15,22 +14,47 @@ variables:
   projectPath: 'BuildProjectConsoleApp.csproj'
 
 steps:
-- task: UseDotNet@2
-  displayName: 'Use .NET SDK 8.0'
-  inputs:
-    packageType: 'sdk'
-    version: '8.0.x'
-    installationPath: $(Agent.ToolsDirectory)/dotnet
+- script: |
+    echo "Using source branch: $(resources.pipeline.buildPipeline.sourceBranch)"
+    echo "Using source commit: $(resources.pipeline.buildPipeline.sourceCommit)"
+    echo "Using build number: $(resources.pipeline.buildPipeline.runName)"
+  displayName: 'Print Selected Build Version'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Restore NuGet packages'
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download Console App Artifact'
   inputs:
-    command: 'restore'
-    projects: '$(projectPath)'
+    buildType: 'specific'
+    artifactName: 'console-app'
+    project: 'AzureSamples'
+    pipeline: '$(resources.pipeline.buildPipeline.pipelineID)'
+    runVersion: 'specific'
+    runId: '$(resources.pipeline.buildPipeline.runID)'
+    patterns: '**/*.zip'
+    targetPath: '$(Pipeline.Workspace)/console-app'
 
-- task: DotNetCoreCLI@2
-  displayName: 'Build project'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Console App Artifact'
   inputs:
-    command: 'build'
-    projects: '$(projectPath)'
-    arguments: '--configuration $(buildConfiguration) --no-restore'
+    PathtoPublish: '$(Pipeline.Workspace)/console-app'
+    ArtifactName: 'console-app'
+    publishLocation: 'Container'
+    # Optionally, you can set TargetPath if you want to specify a subfolder in the artifact container
+
+- task: DownloadPipelineArtifact@2
+  displayName: 'Download Web API Artifact'
+  inputs:
+    buildType: 'specific'
+    artifactName: 'web-api'
+    project: 'AzureSamples'
+    pipeline: '$(resources.pipeline.buildPipeline.pipelineID)'
+    runVersion: 'specific'
+    runId: '$(resources.pipeline.buildPipeline.runID)'
+    patterns: '**/*.zip'
+    targetPath: '$(Pipeline.Workspace)/web-api'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Web API Artifact'
+  inputs:
+    PathtoPublish: '$(Pipeline.Workspace)/web-api'
+    ArtifactName: 'web-api'
+    publishLocation: 'Container'
